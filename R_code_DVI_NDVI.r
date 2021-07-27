@@ -42,4 +42,5 @@ levelplot(crop)
 #
 p1 <- ggRGB(defor1, 1,2,3, stretch="lin") # gglpot's plotRGB()
 p2 <- ggRGB(defor2, 1,2,3, stretch="lin")
-# par(mfrow()) does not work with ggplots; no stable package available up to now
+# par(mfrow()) does not work with ggplots; can use gridExtra::grid.arrange()
+grid.arrange(p1, p2, nrow=2)
