@@ -2,7 +2,8 @@
 library(raster) # load package
 setwd("C:/Users/Rob/Desktop/UNIBO_05.04.21/Telerilevamento e GIS/lab") # set working directory
 # Landsat image (7 bands)
-# file name allows to identify location on a map: p224 = path224 (satellite path code); r63 = row 63; _2011 = year of flight)
+# file name allows to identify location on the Landsat map (https://landsat.gsfc.nasa.gov/about/worldwide-reference-system)
+# p224 = path224 (satellite path code); r63 = row 63; _2011 = year of flight)
 # every satellite uses a different nomenclature
 p224r63_2011 <- brick("p224r63_2011_masked.grd") # load image as a rasterbrick object, which is a 'pack of bands'        
 plot(p224r63_2011) # plot of all 7 bands
