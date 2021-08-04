@@ -1,0 +1,1073 @@
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage[sc]{mathpazo}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=true,bookmarksopen=true,bookmarksopenlevel=2,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
+ {hyperref}
+\hypersetup{
+ pdfstartview={XYZ null null 1}}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\topfraction}{0.8}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\floatpagefraction}{0.75}
+
+\makeatother
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+
+
+\title{\title{}}
+
+
+
+\maketitle
+Roberto  Celva, n. mat. 0996871
+
+Analisi e gestione dell'ambiente, UNIBO, 2021
+
+Script per "Telerilevamento Geo-ecologico" (Duccio Rocchini)
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+
+\hlcom{# 1. Remote sensing}
+\hlcom{# 2. Time series analysis}
+\hlcom{# 3. Copernicus data}
+\hlcom{# 4. knitr}
+\hlcom{# 5. Multivariate analysis}
+\hlcom{# 6. Cluster analysis}
+\hlcom{# 7. ggplot2}
+\hlcom{# 8. DVI - NDVI}
+\hlcom{# 9. PCA}
+\hlcom{# 10. Spectral signature}
+
+\hlcom{# 1. Remote sensing---------------------------------------}
+
+\hlcom{# install.packages('NAME.OF.PACKAGE') to install new packages}
+
+\hlkwd{library}\hlstd{(raster)} \hlcom{# library() to load package}
+\hlkwd{library}\hlstd{(rasterVis)}
+\hlkwd{library}\hlstd{(rasterdiv)}
+\hlkwd{library}\hlstd{(ncdf4)}
+\hlkwd{library}\hlstd{(knitr)}
+\hlkwd{library}\hlstd{(RStoolbox)}
+\hlkwd{library}\hlstd{(ggplot2)}
+\hlkwd{library}\hlstd{(gridExtra)}
+\hlkwd{library}\hlstd{(viridis)}
+\hlkwd{library}\hlstd{(rgdal)}
+
+\hlcom{# set working directory}
+
+\hlkwd{setwd}\hlstd{(}\hlstr{'C:/Users/Rob/Desktop/UNIBO_05.04.21/Telerilevamento e GIS/lab'}\hlstd{)}
+
+\hlstd{p224r63_2011} \hlkwb{<-} \hlkwd{brick}\hlstd{(}\hlstr{'p224r63_2011_masked.grd'}\hlstd{)}
+
+\hlcom{# brick() loads image as a rasterbrick object, which is a 'pack of bands'}
+\hlcom{# use brick() to load multilayer objects, raster() to load one layer at a time}
+
+\hlcom{# Landsat7 image (7 bands, sensor ETM+, repeat 16 days).}
+\hlcom{# File name allows to identify location on the Landsat map}
+\hlcom{# (https://landsat.gsfc.nasa.gov/about/worldwide-reference-system)}
+\hlcom{# p224 = path224 (satellite path code); r63 = row 63; _2011 = year of flight)}
+\hlcom{# every satellite uses a different nomenclature}
+
+\hlkwd{plot}\hlstd{(p224r63_2011)} \hlcom{# plot of all 7 bands}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-1} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# Typing object name outputs his charactristics (in this case, number of bands,}
+\hlcom{# extention, resolution etc.)}
+
+\hlcom{# B1: blue}
+\hlcom{# B2: green}
+\hlcom{# B3: red}
+\hlcom{# B4: NIR (near)}
+\hlcom{# B5: MIR (medium)}
+\hlcom{# B6: TIR (thermal)}
+\hlcom{# B7: MIR (another MIR)}
+
+\hlstd{cls} \hlkwb{<-} \hlkwd{colorRampPalette}\hlstd{(}\hlkwd{c}\hlstd{(}\hlstr{'black'}\hlstd{,} \hlstr{'yellow'}\hlstd{,} \hlstr{'red'}\hlstd{)) (}\hlnum{100}\hlstd{)}
+
+\hlcom{# colorRampPalette() generates a vector containing a chromatic scale.}
+\hlcom{# (100) specifyes the number of shades for every color}
+
+\hlkwd{plot}\hlstd{(p224r63_2011,} \hlkwc{col} \hlstd{= cls)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-2} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# reflectance values ranges from 0 to 1; having set cls, 0 will be}
+\hlcom{# 'red' and 1 will be 'purple', for every band}
+
+\hlcom{# 4 images plot}
+
+\hlkwd{par}\hlstd{(}\hlkwc{mar} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{2}\hlstd{))} \hlcom{# set plot margins (def: c(5.1, 4.1, 4.1, 2.1)) #B, L, T, R #}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{4}\hlstd{,} \hlnum{1}\hlstd{))} \hlcom{# 4 rows, 1 column}
+\hlkwd{plot}\hlstd{(p224r63_2011}\hlopt{$}\hlstd{B1_sre)} \hlcom{# plot 'blue' band}
+\hlkwd{plot}\hlstd{(p224r63_2011}\hlopt{$}\hlstd{B2_sre)} \hlcom{# plot 'green' band}
+\hlkwd{plot}\hlstd{(p224r63_2011}\hlopt{$}\hlstd{B3_sre)} \hlcom{# plot 'red' band}
+\hlkwd{plot}\hlstd{(p224r63_2011}\hlopt{$}\hlstd{B4_sre)} \hlcom{# plot 'NIR' band}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-3} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# plotRGB() assigns one color band (from the raster brick set, 7 bands in this case)}
+\hlcom{# to each of the three components (r, g, b)).}
+
+\hlcom{# 'stretch' argument  normalizes raster reflectance values to 0-1}
+\hlcom{# (hands on, it toogles the contrast).}
+
+\hlcom{# 'lin' sets a linear stretch; 'hist' uses a more aggressive algorithm}
+
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{3}\hlstd{,} \hlnum{1}\hlstd{))} \hlcom{# 4 rows, 1 column}
+
+\hlcom{# natural colors image}
+
+\hlkwd{plotRGB}\hlstd{(p224r63_2011,} \hlkwc{r} \hlstd{=} \hlnum{3}\hlstd{,} \hlkwc{g} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{b} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{stretch} \hlstd{=} \hlstr{'lin'}\hlstd{)}
+
+\hlcom{# assign 'red' to NIR band (note: forest has a high reflectance in NIR)}
+
+\hlkwd{plotRGB}\hlstd{(p224r63_2011,} \hlkwc{r} \hlstd{=} \hlnum{4}\hlstd{,} \hlkwc{g} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{b} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{stretch} \hlstd{=} \hlstr{'lin'}\hlstd{)}
+\hlkwd{plotRGB}\hlstd{(p224r63_2011,} \hlkwc{r} \hlstd{=} \hlnum{4}\hlstd{,} \hlkwc{g} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{b} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{stretch} \hlstd{=} \hlstr{'hist'}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-4} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{### 1988 - 2011 comparison}
+
+\hlstd{p224r63_1988} \hlkwb{<-} \hlkwd{brick}\hlstd{(}\hlstr{'p224r63_1988_masked.grd'}\hlstd{)}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{1}\hlstd{))}
+
+\hlcom{# natural colors}
+
+\hlkwd{plotRGB}\hlstd{(p224r63_1988,} \hlkwc{r} \hlstd{=} \hlnum{3}\hlstd{,} \hlkwc{g} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{b} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{stretch} \hlstd{=} \hlstr{'lin'}\hlstd{)}
+\hlkwd{plotRGB}\hlstd{(p224r63_2011,} \hlkwc{r} \hlstd{=} \hlnum{3}\hlstd{,} \hlkwc{g} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{b} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{stretch} \hlstd{=} \hlstr{'lin'}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-5} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# note: pink shade in 1988 is actually atmosferic scattering resulting from}
+\hlcom{# low-level correction}
+
+\hlcom{# 2011-1988 NIR and stretch (lin - hist) comparison}
+\hlcom{# pdf() generates a pdf file. Needs dev.off() after plot set to work}
+
+\hlkwd{pdf}\hlstd{(}\hlstr{'Deforestation_lin-hist.pdf'}\hlstd{)}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{2}\hlstd{))}
+\hlkwd{plotRGB}\hlstd{(p224r63_1988,} \hlkwc{r} \hlstd{=} \hlnum{4}\hlstd{,} \hlkwc{g} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{b} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{stretch} \hlstd{=} \hlstr{'lin'}\hlstd{)}
+\hlkwd{plotRGB}\hlstd{(p224r63_2011,} \hlkwc{r} \hlstd{=} \hlnum{4}\hlstd{,} \hlkwc{g} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{b} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{stretch} \hlstd{=} \hlstr{'lin'}\hlstd{)}
+\hlkwd{plotRGB}\hlstd{(p224r63_1988,} \hlkwc{r} \hlstd{=} \hlnum{4}\hlstd{,} \hlkwc{g} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{b} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{stretch} \hlstd{=} \hlstr{'hist'}\hlstd{)}
+\hlkwd{plotRGB}\hlstd{(p224r63_2011,} \hlkwc{r} \hlstd{=} \hlnum{4}\hlstd{,} \hlkwc{g} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{b} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{stretch} \hlstd{=} \hlstr{'hist'}\hlstd{)}
+\hlkwd{dev.off}\hlstd{()} \hlcom{# delete all plots and reset graphic settings to default}
+\end{alltt}
+\begin{verbatim}
+## pdf 
+##   2
+\end{verbatim}
+\begin{alltt}
+\hlcom{# 2. Time series analysis---------------------------------}
+
+\hlcom{# library(raster)}
+\hlcom{# library(rasterVis)}
+
+\hlkwd{setwd}\hlstd{(}\hlstr{'./greenland'}\hlstd{)}
+\hlcom{# "./" to address subfolders from wd.}
+
+\hlstd{lst_2000} \hlkwb{<-} \hlkwd{raster}\hlstd{(}\hlstr{'lst_2000.tif'}\hlstd{)}
+\hlstd{lst_2005} \hlkwb{<-} \hlkwd{raster}\hlstd{(}\hlstr{'lst_2005.tif'}\hlstd{)}
+\hlstd{lst_2010} \hlkwb{<-} \hlkwd{raster}\hlstd{(}\hlstr{'lst_2010.tif'}\hlstd{)}
+\hlstd{lst_2015} \hlkwb{<-} \hlkwd{raster}\hlstd{(}\hlstr{'lst_2015.tif'}\hlstd{)}
+
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{2}\hlstd{))}
+\hlkwd{plot}\hlstd{(lst_2000)}
+\hlkwd{plot}\hlstd{(lst_2005)}
+\hlkwd{plot}\hlstd{(lst_2010)}
+\hlkwd{plot}\hlstd{(lst_2015)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-6} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlstd{rlist} \hlkwb{<-} \hlkwd{list.files}\hlstd{(}\hlkwc{pattern} \hlstd{=} \hlstr{'lst'}\hlstd{)}
+
+\hlcom{# list files containing 'lst' in the name. }
+
+\hlcom{# LST = Land Surface Temperature for Greenland from 2000 to 2015}
+
+\hlstd{import} \hlkwb{<-} \hlkwd{lapply}\hlstd{(rlist, raster)} \hlcom{# must adress object in the environment}
+
+\hlcom{# lapply() applies raster() (which inports single files, countrary to brick()}
+\hlcom{# which manages multilayer objects) to objects in 'rlist'}
+
+\hlstd{TGr} \hlkwb{<-} \hlkwd{stack}\hlstd{(import)}
+
+\hlcom{# stack() creates a RasterStack object (similar to a RasterBrick,}
+\hlcom{# but is a collection of single-layered objecs insthead of one multilayered one)}
+
+\hlkwd{plot}\hlstd{(TGr)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-7} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{1}\hlstd{))}
+\hlkwd{plotRGB}\hlstd{(TGr,} \hlnum{1}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{3}\hlstd{,} \hlkwc{stretch} \hlstd{=} \hlstr{'lin'}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-8} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlkwd{levelplot}\hlstd{(TGr}\hlopt{$}\hlstd{lst_2000)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-9} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# levelplot() generates a heatmap, with histograms representing mean pixel}
+\hlcom{# value by raster row and column.}
+
+\hlstd{crp} \hlkwb{<-} \hlkwd{colorRampPalette}\hlstd{(}\hlkwd{c}\hlstd{(}\hlstr{'black'}\hlstd{,} \hlstr{'orange'}\hlstd{,} \hlstr{'red'}\hlstd{))(}\hlnum{200}\hlstd{)}
+\hlkwd{levelplot}\hlstd{(TGr}\hlopt{$}\hlstd{lst_2000,} \hlkwc{col.regions} \hlstd{= crp)} \hlcom{# 'col.region' is levelplot()'s 'col' }
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-10} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# plot all 4 layers, specifying main title and subtitles}
+
+\hlkwd{levelplot}\hlstd{(TGr,} \hlkwc{col.regions} \hlstd{= crp,} \hlkwc{names.attr} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{'2000'}\hlstd{,} \hlstr{'2005'}\hlstd{,} \hlstr{'2010'}\hlstd{,} \hlstr{'2015'}\hlstd{),}
+          \hlkwc{main} \hlstd{=} \hlstr{'Greenland'}\hlstd{)} \hlcom{# plot all strata, using main title and subtitles}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-11} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlstd{mlist} \hlkwb{<-} \hlkwd{list.files}\hlstd{(}\hlkwc{pattern} \hlstd{=} \hlstr{'melt'}\hlstd{)}
+
+\hlcom{# Nimbus7 satellite images (launched 1978). Microwave sensor}
+\hlcom{# (https://nsidc.org/data/nsidc-0218)}
+
+\hlstd{minport} \hlkwb{<-} \hlkwd{lapply}\hlstd{(mlist, raster)}
+\hlstd{melt} \hlkwb{<-} \hlkwd{stack}\hlstd{(minport)}
+\hlkwd{levelplot}\hlstd{(melt)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-12} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# difference between current and 1978 melting figures}
+
+\hlstd{melt_amount} \hlkwb{<-} \hlstd{melt}\hlopt{$}\hlstd{X2007annual_melt} \hlopt{-} \hlstd{melt}\hlopt{$}\hlstd{X1979annual_melt}
+\hlkwd{levelplot}\hlstd{(melt_amount)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-13} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# 3. Copernicus data--------------------------------------}
+
+\hlcom{# library(raster)}
+\hlcom{# library(ncdf4)}
+
+\hlkwd{setwd}\hlstd{(}\hlstr{'C:/Users/Rob/Desktop/UNIBO_05.04.21/Telerilevamento e GIS/lab'}\hlstd{)}
+
+\hlcom{# VITO observatory Soil Water Index}
+\hlcom{# https://land.copernicus.vgt.vito.be/PDF/portal/Application.html#Browse;Root=514690;Collection=1000281;DoSearch=true;Time=NORMAL,NORMAL,1,JANUARY,2015,31,DECEMBER,2022;isReserved=false}
+\hlcom{# single-layered object, inport using raster()}
+
+\hlstd{aqa} \hlkwb{<-} \hlkwd{raster}\hlstd{(}\hlstr{'c_gls_SWI1km_202107101200_CEURO_SCATSAR_V1.0.1.nc'}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning in .varName(nc, varname, warn = warn): varname used is: SSF\\\#\# If that is not correct, you can set it to one of: SSF, SWI\_002, QFLAG\_002, SWI\_005, QFLAG\_005, SWI\_010, QFLAG\_010, SWI\_015, QFLAG\_015, SWI\_020, QFLAG\_020, SWI\_040, QFLAG\_040, SWI\_060, QFLAG\_060, SWI\_100, QFLAG\_100}}
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning in .getCRSfromGridMap4(atts): cannot process these parts of the CRS:\\\#\# long\_name=CRS definition\\\#\# spatial\_ref=GEOGCS["{}WGS 84"{},DATUM["{}WGS\_1984"{},SPHEROID["{}WGS 84"{},6378137,298.257223563,AUTHORITY["{}EPSG"{},"{}7030"{}]],AUTHORITY["{}EPSG"{},"{}6326"{}]],PRIMEM["{}Greenwich"{},0,AUTHORITY["{}EPSG"{},"{}8901"{}]],UNIT["{}degree"{},0.0174532925199433,AUTHORITY["{}EPSG"{},"{}9122"{}]],AUTHORITY["{}EPSG"{},"{}4326"{}]]\\\#\# GeoTransform=-11 0.008928571428571428 0 72 0 -0.008928571428571428}}\begin{alltt}
+\hlstd{crp} \hlkwb{<-} \hlkwd{colorRampPalette}\hlstd{(}\hlkwd{c}\hlstd{(}\hlstr{'black'}\hlstd{,} \hlstr{'orange'}\hlstd{,} \hlstr{'red'}\hlstd{))(}\hlnum{200}\hlstd{)}
+\hlkwd{plot}\hlstd{(aqa,} \hlkwc{col} \hlstd{= crp)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-14} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# RE-SAMPLING (skim pixel to obtain a lighter object)}
+
+\hlstd{aqa_small} \hlkwb{<-} \hlkwd{aggregate}\hlstd{(aqa,} \hlkwc{fact} \hlstd{=} \hlnum{50}\hlstd{)}
+\hlkwd{plot}\hlstd{(aqa_small,} \hlkwc{col} \hlstd{= crp)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-15} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# 4. knitr------------------------------------------------}
+
+\hlcom{# library(knitr)}
+
+\hlcom{# execute an external r code and store outputs in .tex and .pdf}
+
+\hlcom{# stitch('Amazon.r', template = system.file('misc', 'knitr-template.Rnw', package = 'knitr'))}
+
+\hlcom{# 5. Multivariate analysis--------------------------------}
+
+\hlcom{# library(raster)}
+\hlcom{# library(RStoolbox)}
+
+\hlstd{p224r63_2011} \hlkwb{<-} \hlkwd{brick}\hlstd{(}\hlstr{'p224r63_2011_masked.grd'}\hlstd{)}
+
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{1}\hlstd{))}
+\hlkwd{plotRGB}\hlstd{(p224r63_2011,} \hlnum{1}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{3}\hlstd{,} \hlkwc{stretch} \hlstd{=} \hlstr{'lin'}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-16} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# plots pixel values on a carthesian system (correlation betwen BLUE and GREEN bands)}
+
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{1}\hlstd{))}
+\hlkwd{plot}\hlstd{(p224r63_2011}\hlopt{$}\hlstd{B1_sre, p224r63_2011}\hlopt{$}\hlstd{B2_sre)}
+\end{alltt}
+
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning in .local(x, y, ...): plot used a sample of 2.2\% of the cells. You can use "{}maxpixels"{} to increase the sample)}}\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-17} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# note: MULTICOLLINEARIY: high degree of correlation between explanarory variables}
+\hlcom{# it is possible to plot the correlation between all bands using pairs(p224r63_2011)}
+
+\hlcom{# 6. cluster analysis-------------------------------------}
+
+\hlcom{# library(raster)}
+\hlcom{# library(RStoolbox)}
+
+\hlcom{# Sun surface}
+\hlcom{# (https://www.esa.int/ESA_Multimedia/Missions/Solar_Orbiter/(result_type)/images)}
+\hlcom{# 8 bit images (2^8 = 256 values per pixel)}
+
+\hlstd{sun} \hlkwb{<-} \hlkwd{brick}\hlstd{(}\hlstr{'Solar_Orbiter_s_first_views_of_the_Sun_pillars.jpg'}\hlstd{)}
+\hlkwd{plotRGB}\hlstd{(sun,} \hlnum{1}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{3}\hlstd{,} \hlkwc{stretch} \hlstd{=} \hlstr{'lin'}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-18} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# UNSUPERVISED CLASSIFICATION (random sampling for the definition of training set)}
+\hlcom{# set.seed() allows coherent results (which pixels fall in each class)}
+
+\hlkwd{set.seed}\hlstd{(}\hlnum{3030}\hlstd{)}
+\hlstd{sunc} \hlkwb{<-} \hlkwd{unsuperClass}\hlstd{(sun,} \hlkwc{nClasses} \hlstd{=} \hlnum{5}\hlstd{)} \hlcom{# soc consist in a 'model' and a 'map'}
+\hlkwd{plot}\hlstd{(sunc}\hlopt{$}\hlstd{map)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-19} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# Grand Canyon (https://landsat.visibleearth.nasa.gov/view.php?id=8094)}
+
+\hlstd{gc} \hlkwb{<-} \hlkwd{brick}\hlstd{(}\hlstr{'dolansprings_oli_2013088_canyon_lrg.jpg'}\hlstd{)}
+\hlkwd{plotRGB}\hlstd{(gc,} \hlkwc{stretch} \hlstd{=} \hlstr{'hist'}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-20} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlstd{gcc} \hlkwb{<-} \hlkwd{unsuperClass}\hlstd{(gc,} \hlkwc{nClasses} \hlstd{=} \hlnum{3}\hlstd{)}
+\hlkwd{plot}\hlstd{(gcc}\hlopt{$}\hlstd{map)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-21} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# 7. Land use & ggplot2-----------------------------------}
+
+\hlcom{# library(raster)}
+\hlcom{# library(ggplot2)}
+\hlcom{# library(gridExtra)}
+
+\hlstd{defor1} \hlkwb{<-} \hlkwd{brick}\hlstd{(}\hlstr{'defor1.png'}\hlstd{)}
+\hlstd{defor2} \hlkwb{<-} \hlkwd{brick}\hlstd{(}\hlstr{'defor2.png'}\hlstd{)}
+
+\hlkwd{par}\hlstd{(}\hlkwc{mar} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{2}\hlstd{))}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{1}\hlstd{))}
+
+\hlkwd{set.seed}\hlstd{(}\hlnum{1986}\hlstd{)}
+\hlstd{d1c} \hlkwb{<-} \hlkwd{unsuperClass}\hlstd{(defor1,} \hlkwc{nClasses} \hlstd{=} \hlnum{2}\hlstd{)}
+\hlstd{d2c} \hlkwb{<-} \hlkwd{unsuperClass}\hlstd{(defor2,} \hlkwc{nClasses} \hlstd{=} \hlnum{2}\hlstd{)}
+
+\hlkwd{plot}\hlstd{(d1c}\hlopt{$}\hlstd{map)} \hlcom{# green = class2 = forest}
+\hlkwd{plot}\hlstd{(d2c}\hlopt{$}\hlstd{map)} \hlcom{# green = class2 = forest}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-22} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlkwd{freq}\hlstd{(d1c}\hlopt{$}\hlstd{map)} \hlcom{# number of pixels for each class}
+\end{alltt}
+\begin{verbatim}
+##      value  count
+## [1,]     1  35494
+## [2,]     2 305798
+\end{verbatim}
+\begin{alltt}
+\hlkwd{freq}\hlstd{(d2c}\hlopt{$}\hlstd{map)} \hlcom{# number of pixels for each class}
+\end{alltt}
+\begin{verbatim}
+##      value  count
+## [1,]     1 178443
+## [2,]     2 164283
+\end{verbatim}
+\begin{alltt}
+\hlcom{# calculate overall proportions by year}
+\hlcom{# (forest and non-forest pixels overall)}
+
+\hlstd{freq_forest92} \hlkwb{<-} \hlkwd{freq}\hlstd{(d1c}\hlopt{$}\hlstd{map)[}\hlnum{2}\hlstd{, ]}\hlopt{/}\hlstd{(}\hlkwd{freq}\hlstd{(d1c}\hlopt{$}\hlstd{map)[}\hlnum{1}\hlstd{, ]} \hlopt{+} \hlkwd{freq}\hlstd{(d1c}\hlopt{$}\hlstd{map)[}\hlnum{2}\hlstd{, ])}
+\hlstd{freq_agro92} \hlkwb{<-} \hlkwd{freq}\hlstd{(d1c}\hlopt{$}\hlstd{map)[}\hlnum{1}\hlstd{, ]}\hlopt{/}\hlstd{(}\hlkwd{freq}\hlstd{(d1c}\hlopt{$}\hlstd{map)[}\hlnum{1}\hlstd{, ]} \hlopt{+} \hlkwd{freq}\hlstd{(d1c}\hlopt{$}\hlstd{map)[}\hlnum{2}\hlstd{, ])}
+\hlstd{freq_forest06} \hlkwb{<-} \hlkwd{freq}\hlstd{(d2c}\hlopt{$}\hlstd{map)[}\hlnum{2}\hlstd{, ]}\hlopt{/}\hlstd{(}\hlkwd{freq}\hlstd{(d2c}\hlopt{$}\hlstd{map)[}\hlnum{1}\hlstd{, ]} \hlopt{+} \hlkwd{freq}\hlstd{(d2c}\hlopt{$}\hlstd{map)[}\hlnum{2}\hlstd{, ])}
+\hlstd{freq_agro06} \hlkwb{<-} \hlkwd{freq}\hlstd{(d2c}\hlopt{$}\hlstd{map)[}\hlnum{1}\hlstd{, ]}\hlopt{/}\hlstd{(}\hlkwd{freq}\hlstd{(d2c}\hlopt{$}\hlstd{map)[}\hlnum{1}\hlstd{, ]} \hlopt{+} \hlkwd{freq}\hlstd{(d2c}\hlopt{$}\hlstd{map)[}\hlnum{2}\hlstd{, ])}
+
+\hlcom{# extract 'count' fields}
+
+\hlstd{f92} \hlkwb{<-}  \hlkwd{as.matrix}\hlstd{(freq_forest92)[}\hlnum{2}\hlstd{, ]}
+\hlstd{a92} \hlkwb{<-}  \hlkwd{as.matrix}\hlstd{(freq_agro92)[}\hlnum{2}\hlstd{, ]}
+\hlstd{f06} \hlkwb{<-}  \hlkwd{as.matrix}\hlstd{(freq_forest06)[}\hlnum{2}\hlstd{, ]}
+\hlstd{a06} \hlkwb{<-}  \hlkwd{as.matrix}\hlstd{(freq_agro06)[}\hlnum{2}\hlstd{, ]}
+
+\hlcom{# build data.frame}
+
+\hlstd{df} \hlkwb{<-} \hlkwd{as.data.frame}\hlstd{(}\hlkwd{rbind}\hlstd{(}\hlkwd{cbind}\hlstd{(a92, a06),} \hlkwd{cbind}\hlstd{(f92, f06)))}
+\hlkwd{rownames}\hlstd{(df)} \hlkwb{<-} \hlstd{Land_use} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{'agriculture'}\hlstd{,} \hlstr{'forest'}\hlstd{)}
+\hlkwd{colnames}\hlstd{(df)} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{'y_1992'}\hlstd{,} \hlstr{'y_2006'}\hlstd{)}
+
+\hlcom{# ggplot function}
+
+\hlstd{p1} \hlkwb{<-} \hlkwd{ggplot}\hlstd{(df,} \hlkwd{aes}\hlstd{(}\hlkwc{x} \hlstd{= Land_use,} \hlkwc{y} \hlstd{= y_1992,} \hlkwc{color} \hlstd{= Land_use))} \hlopt{+}
+  \hlkwd{geom_bar}\hlstd{(}\hlkwc{stat} \hlstd{=} \hlstr{'identity'}\hlstd{,} \hlkwc{fill} \hlstd{=} \hlstr{'lightgreen'}\hlstd{)} \hlopt{+}
+  \hlkwd{labs}\hlstd{(}\hlkwc{y} \hlstd{=} \hlstr{'Soil cover (%, 1992)'}\hlstd{)} \hlopt{+}
+  \hlkwd{theme}\hlstd{(}\hlkwc{legend.position} \hlstd{=} \hlstr{'none'}\hlstd{,} \hlkwc{axis.title.x} \hlstd{=} \hlkwd{element_blank}\hlstd{())}
+
+\hlstd{p2} \hlkwb{<-} \hlkwd{ggplot}\hlstd{(df,} \hlkwd{aes}\hlstd{(}\hlkwc{x} \hlstd{= Land_use,} \hlkwc{y} \hlstd{= y_2006,} \hlkwc{color} \hlstd{= Land_use))} \hlopt{+}
+  \hlkwd{geom_bar}\hlstd{(}\hlkwc{stat} \hlstd{=} \hlstr{'identity'}\hlstd{,} \hlkwc{fill} \hlstd{=} \hlstr{'lightgreen'}\hlstd{)} \hlopt{+}
+  \hlkwd{labs}\hlstd{(}\hlkwc{y} \hlstd{=} \hlstr{'Soil cover (%, 2006)'}\hlstd{)} \hlopt{+}
+  \hlkwd{theme}\hlstd{(}\hlkwc{legend.position} \hlstd{=} \hlstr{'none'}\hlstd{,} \hlkwc{axis.title.x} \hlstd{=} \hlkwd{element_blank}\hlstd{())}
+
+\hlcom{# side-by-side ggplots can be achieved with gridExtra::grid.arrange}
+\hlcom{# RStoolbox::ggRGB}
+
+\hlkwd{grid.arrange}\hlstd{(p1, p2,} \hlkwc{nrow} \hlstd{=} \hlnum{2}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-23} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# 8. DVI (Diversity Vegetation Index) & NDVI--------------}
+
+\hlcom{# library(RStoolbox)}
+\hlcom{# library(rasterdiv)}
+\hlcom{# library(rasterVis)}
+\hlcom{# library(ggplot2)}
+
+\hlstd{defor1} \hlkwb{<-} \hlkwd{brick}\hlstd{(}\hlstr{'defor1.png'}\hlstd{)}
+\hlstd{defor2} \hlkwb{<-} \hlkwd{brick}\hlstd{(}\hlstr{'defor2.png'}\hlstd{)}
+
+\hlcom{# processed images: b1 =  NIR, b2 = RED, b3 = GREEN}
+
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{1}\hlstd{))}
+\hlkwd{plotRGB}\hlstd{(defor1,} \hlnum{1}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{3}\hlstd{,} \hlkwc{stretch} \hlstd{=} \hlstr{'lin'}\hlstd{)} \hlcom{# NIR to red, RED to green, GREEN to blue}
+\hlkwd{plotRGB}\hlstd{(defor2,} \hlnum{1}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{3}\hlstd{,} \hlkwc{stretch} \hlstd{=} \hlstr{'lin'}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-24} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# note: pure water absorbs NIR, red and green, so that it should turn out black.}
+\hlcom{# Solids in suspension makes water a generally lighter color}
+\hlcom{# note: in 8bit images DVI betwen -255 (dead vegetation) and 255 (vegetation max health)}
+
+\hlstd{DVI1} \hlkwb{<-} \hlstd{defor1}\hlopt{$}\hlstd{defor1.1} \hlopt{-} \hlstd{defor1}\hlopt{$}\hlstd{defor1.2} \hlcom{# DVI: NIR - RED}
+\hlstd{DVI2} \hlkwb{<-} \hlstd{defor2}\hlopt{$}\hlstd{defor2.1} \hlopt{-} \hlstd{defor2}\hlopt{$}\hlstd{defor2.2}
+
+\hlkwd{plot}\hlstd{(DVI1,} \hlkwc{main} \hlstd{=} \hlstr{'DVI 1992'}\hlstd{)}
+\hlkwd{plot}\hlstd{(DVI2,} \hlkwc{main} \hlstd{=} \hlstr{'DVI 2006'}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-25} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{1}\hlstd{))}
+\hlstd{deltaDVI} \hlkwb{<-} \hlstd{DVI1} \hlopt{-} \hlstd{DVI2}
+\end{alltt}
+
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning in DVI1 - DVI2: Raster objects have different extents. Result for their intersection is returned}}\begin{alltt}
+\hlstd{crp} \hlkwb{<-} \hlkwd{colorRampPalette}\hlstd{(}\hlkwd{c}\hlstd{(}\hlstr{'green'}\hlstd{,} \hlstr{'brown'}\hlstd{,} \hlstr{'purple'}\hlstd{))(}\hlnum{100}\hlstd{)}
+
+\hlcom{# note: big deltaDVI -> purple; healthy veggies -> green}
+\hlcom{# NDVI: Normalized DVI = DVI / (NIR+red)}
+
+\hlstd{NDVI1} \hlkwb{<-} \hlstd{DVI1}\hlopt{/}\hlstd{(defor1}\hlopt{$}\hlstd{defor1.1} \hlopt{+} \hlstd{defor1}\hlopt{$}\hlstd{defor1.2)}
+\hlstd{NDVI2} \hlkwb{<-} \hlstd{DVI2}\hlopt{/}\hlstd{(defor2}\hlopt{$}\hlstd{defor2.1} \hlopt{+} \hlstd{defor2}\hlopt{$}\hlstd{defor2.2)}
+\hlstd{deltaNDVI} \hlkwb{<-} \hlstd{NDVI1} \hlopt{-} \hlstd{NDVI2}
+\end{alltt}
+
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning in NDVI1 - NDVI2: Raster objects have different extents. Result for their intersection is returned}}\begin{alltt}
+\hlcom{# RStoolbox has an in-built function (spectralIndices()) to calculate}
+\hlcom{# these (and more) parameters}
+
+\hlstd{indices} \hlkwb{<-} \hlkwd{spectralIndices}\hlstd{(defor1,} \hlkwc{green} \hlstd{=} \hlnum{3}\hlstd{,} \hlkwc{red} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{nir} \hlstd{=} \hlnum{1}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning: EVI/EVI2 parameters L\_evi, G, C1 and C2 are defined for reflectance [0,1] but img values are outside of this range.\\\#\#\ \  If you are using scaled reflectance values please provide the scaleFactor argument.\\\#\#\ \  If img is in DN or radiance it must be converted to reflectance.\\\#\#\ \  Skipping EVI calculation.}}\begin{alltt}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{2}\hlstd{))}
+\hlkwd{plot}\hlstd{(deltaDVI,} \hlkwc{col} \hlstd{= crp)}
+\hlkwd{plot}\hlstd{(deltaNDVI,} \hlkwc{col} \hlstd{= crp)}
+\hlkwd{plot}\hlstd{(indices}\hlopt{$}\hlstd{DVI,} \hlkwc{col} \hlstd{= crp)}
+\hlkwd{plot}\hlstd{(indices}\hlopt{$}\hlstd{NDVI,} \hlkwc{col} \hlstd{= crp)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-26} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# rasterdiv contains NDVI dataset from Copernicus}
+\hlcom{# (copNDVI; https://land.copernicus.eu/global/products/ndvi)}
+
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{1}\hlstd{))}
+\hlkwd{plot}\hlstd{(copNDVI)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-27} 
+
+}
+
+
+
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-28} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# to crop out values from 253 to 255 (water) set relative columns to NA}
+
+\hlstd{crop} \hlkwb{<-} \hlkwd{reclassify}\hlstd{(copNDVI,} \hlkwd{cbind}\hlstd{(}\hlnum{253}\hlopt{:}\hlnum{255}\hlstd{,} \hlnum{NA}\hlstd{))}
+\hlkwd{levelplot}\hlstd{(crop)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-29} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# 9. PCA (Principal Component Analysis)-------------------}
+
+\hlcom{# library(raster)}
+\hlcom{# library(ggplot2)}
+\hlcom{# library(viridis) # ggplot color palette, suitable for sight-challenged (besides 'turbo').}
+\hlcom{# library(RStoolbox)}
+
+\hlstd{sentinel} \hlkwb{<-} \hlkwd{brick}\hlstd{(}\hlstr{'sentinel.png'}\hlstd{)}
+
+\hlcom{# img already processed and stretched. 4 layers (1 = NIR; 2 = red; 3 = green)}
+
+\hlkwd{plotRGB}\hlstd{(sentinel)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-30} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlstd{NIR} \hlkwb{<-} \hlstd{sentinel}\hlopt{$}\hlstd{sentinel.1}
+\hlstd{red} \hlkwb{<-} \hlstd{sentinel}\hlopt{$}\hlstd{sentinel.2}
+\hlstd{ndvi} \hlkwb{<-} \hlstd{(NIR} \hlopt{-} \hlstd{red)}\hlopt{/}\hlstd{(NIR} \hlopt{+} \hlstd{red)}
+\hlstd{crp} \hlkwb{<-} \hlkwd{colorRampPalette}\hlstd{(}\hlkwd{c}\hlstd{(}\hlstr{'red'}\hlstd{,} \hlstr{'green'}\hlstd{,} \hlstr{'black'}\hlstd{))(}\hlnum{100}\hlstd{)}
+\hlkwd{plot}\hlstd{(ndvi,} \hlkwc{col} \hlstd{= crp)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-31} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# MOVING WINDOW:}
+\hlcom{# raster::focal() applyes FUN to pixels that falls in the grid of the window}
+\hlcom{# (moving window), defined as a matrix.}
+
+\hlcom{# FUN (sd() in this case) is calculated over pixels falling into the grid.}
+\hlcom{# Outputs are stored in the central pixel.}
+
+\hlcom{# In this case, a grid of 3*3 is moved, stopping on every 9th pixel}
+\hlcom{# note: to have a central pixel, window has to be uneaven!}
+
+\hlstd{ndvi_sd3} \hlkwb{<-} \hlkwd{focal}\hlstd{(ndvi,} \hlkwc{w} \hlstd{=} \hlkwd{matrix}\hlstd{(}\hlnum{1}\hlopt{/}\hlnum{9}\hlstd{,} \hlkwc{nrow} \hlstd{=} \hlnum{3}\hlstd{,} \hlkwc{ncol} \hlstd{=} \hlnum{3}\hlstd{),} \hlkwc{fun} \hlstd{= sd)}
+\hlkwd{plot}\hlstd{(ndvi_sd3,} \hlkwc{col} \hlstd{= crp)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-32} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# SD distribution (higher SD between vegetation and rock, NDVI changes rapidly in peaks)}
+
+\hlcom{# Principal Component Analysis over raster object}
+
+\hlstd{sentpca} \hlkwb{<-} \hlkwd{rasterPCA}\hlstd{(sentinel)}
+\hlkwd{plot}\hlstd{(sentpca}\hlopt{$}\hlstd{map)} \hlcom{# variance distributions among 4 principal components}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-33} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlkwd{summary}\hlstd{(sentpca}\hlopt{$}\hlstd{model)} \hlcom{# PC1 explains 77% of variance}
+\end{alltt}
+\begin{verbatim}
+## Importance of components:
+##                            Comp.1     Comp.2      Comp.3 Comp.4
+## Standard deviation     77.3362848 53.5145531 5.765599616      0
+## Proportion of Variance  0.6736804  0.3225753 0.003744348      0
+## Cumulative Proportion   0.6736804  0.9962557 1.000000000      1
+\end{verbatim}
+\begin{alltt}
+\hlcom{# redo mowing window analysis over PC1 only}
+
+\hlstd{pc1} \hlkwb{<-} \hlstd{sentpca}\hlopt{$}\hlstd{map}\hlopt{$}\hlstd{PC1} \hlcom{# redirect PC1 as a raster object}
+\hlstd{pc1_sd5} \hlkwb{<-} \hlkwd{focal}\hlstd{(pc1,} \hlkwc{w} \hlstd{=} \hlkwd{matrix}\hlstd{(}\hlnum{1}\hlopt{/}\hlnum{25}\hlstd{,} \hlkwc{nrow} \hlstd{=} \hlnum{5}\hlstd{,} \hlkwc{ncol} \hlstd{=} \hlnum{5}\hlstd{),} \hlkwc{fun} \hlstd{= sd)}
+\hlkwd{plot}\hlstd{(pc1_sd5,} \hlkwc{col} \hlstd{= crp)} \hlcom{# now variance is clearly defined}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-34} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# plot in ggplot using scale_fill_viridis_c() color palette}
+\hlcom{# options for scale_fill viridis: magma, inferno, plasma, cividis, viridis}
+
+\hlstd{p1} \hlkwb{<-} \hlkwd{ggplot}\hlstd{()}\hlopt{+}
+  \hlkwd{geom_raster}\hlstd{(pc1_sd5,} \hlkwc{mapping} \hlstd{=} \hlkwd{aes}\hlstd{(}\hlkwc{x} \hlstd{= x,} \hlkwc{y} \hlstd{= y,} \hlkwc{fill} \hlstd{= layer))} \hlopt{+}
+  \hlkwd{scale_fill_viridis}\hlstd{(}\hlkwc{option} \hlstd{=} \hlstr{'mako'}\hlstd{)} \hlopt{+}
+  \hlkwd{ggtitle}\hlstd{(}\hlstr{'PC1 SD'}\hlstd{)}
+\hlstd{p1}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-35} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# 10. Spectral signatures---------------------------------}
+
+\hlcom{# https://www.neonscience.org/resources/learning-hub/tutorials/select-pixels-compare-spectral-signatures-r}
+
+\hlcom{# library(raster)}
+\hlcom{# library(rgdal)}
+\hlcom{# library(ggplot2)}
+
+\hlstd{defor2} \hlkwb{<-} \hlkwd{brick}\hlstd{(}\hlstr{'defor2.png'}\hlstd{)}
+\hlkwd{plotRGB}\hlstd{(defor2,} \hlkwc{r} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{g} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{b} \hlstd{=} \hlnum{3}\hlstd{,} \hlkwc{stretch} \hlstd{=} \hlstr{'lin'}\hlstd{)}
+
+\hlcom{# raster::click allows to query points by clicking on map. 'esc' to quit}
+\hlcom{# defor2 is a raster brick, so values of the 3 layers are given}
+\hlcom{# b1 =  NIR, b2 = red, b3 = green}
+\hlcom{# get the values for FOREST and WATER}
+
+\hlkwd{click}\hlstd{(defor2,} \hlkwc{id} \hlstd{= T,} \hlkwc{xy} \hlstd{= T,} \hlkwc{cell} \hlstd{= T,} \hlkwc{type} \hlstd{=} \hlstr{'p'}\hlstd{,} \hlkwc{pch} \hlstd{=} \hlnum{16}\hlstd{,} \hlkwc{cex} \hlstd{=} \hlnum{4}\hlstd{,} \hlkwc{col} \hlstd{=} \hlstr{'yellow'}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-36} 
+
+}
+
+
+\begin{kframe}\begin{verbatim}
+## NULL
+\end{verbatim}
+\begin{alltt}
+\hlcom{# output:}
+
+\hlcom{#       x     y   cell defor1.1 defor1.2 defor1.3}
+\hlcom{# 1 132.5 450.5  19411      207       14       35}
+\hlcom{# 2 311.5 122.5 253782      197      240      223}
+
+\hlcom{# as expectes, in FOREST reflectance is higher in NIR than in RED and GREEN}
+\hlcom{# not so in WATER}
+
+\hlstd{band} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{3}\hlstd{)}
+\hlstd{forest} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{207}\hlstd{,} \hlnum{14}\hlstd{,} \hlnum{35}\hlstd{)}
+\hlstd{river} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{197}\hlstd{,} \hlnum{240}\hlstd{,} \hlnum{223}\hlstd{)}
+
+\hlcom{# build data.frame}
+
+\hlstd{spectrals} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(band, forest, river)}
+
+\hlkwd{ggplot}\hlstd{(spectrals,} \hlkwd{aes}\hlstd{(}\hlkwc{x} \hlstd{= band))} \hlopt{+}
+  \hlkwd{geom_line}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{y} \hlstd{= forest),} \hlkwc{color} \hlstd{=} \hlstr{'green'}\hlstd{)} \hlopt{+}
+  \hlkwd{geom_line}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{y} \hlstd{= river),} \hlkwc{color} \hlstd{=} \hlstr{'blue'}\hlstd{)} \hlopt{+}
+  \hlkwd{labs}\hlstd{(}\hlkwc{x} \hlstd{=} \hlstr{'band'}\hlstd{,} \hlkwc{y} \hlstd{=} \hlstr{'reflectance'}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-37} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# note: geom_line is not a great option, as "bands" are discrete!}
+
+\hlcom{# 1992 - 2006 comparison}
+
+\hlstd{defor2} \hlkwb{<-} \hlkwd{brick}\hlstd{(}\hlstr{'defor2.png'}\hlstd{)}
+\hlkwd{plotRGB}\hlstd{(defor2,} \hlkwc{r} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{g} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{b} \hlstd{=} \hlnum{3}\hlstd{,} \hlkwc{stretch} \hlstd{=} \hlstr{'lin'}\hlstd{)}
+\hlkwd{click}\hlstd{(defor1,} \hlkwc{id} \hlstd{= T,} \hlkwc{xy} \hlstd{= T,} \hlkwc{cell} \hlstd{= T,} \hlkwc{type} \hlstd{=} \hlstr{'p'}\hlstd{,} \hlkwc{pch} \hlstd{=} \hlnum{16}\hlstd{,} \hlkwc{cex} \hlstd{=} \hlnum{4}\hlstd{,} \hlkwc{col} \hlstd{=} \hlstr{'yellow'}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-38} 
+
+}
+
+
+\begin{kframe}\begin{verbatim}
+## NULL
+\end{verbatim}
+\begin{alltt}
+\hlcom{#       x     y   cell defor2.1 defor2.2 defor2.3}
+\hlcom{# 1  39.5 426.5  36607      191       15       25}
+\hlcom{# 2 115.5 217.5 186536       75       41       76}
+
+\hlcom{# define the columns of the dataset:}
+
+\hlstd{forest2} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{191}\hlstd{,} \hlnum{15}\hlstd{,} \hlnum{25}\hlstd{)}
+\hlstd{river2} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{75}\hlstd{,} \hlnum{41}\hlstd{,} \hlnum{76}\hlstd{)}
+
+\hlcom{# bind columns to 1992 data.frame}
+
+\hlstd{delta} \hlkwb{<-} \hlkwd{cbind}\hlstd{(spectrals, forest2, river2)}
+
+\hlcom{# plot}
+\hlkwd{ggplot}\hlstd{(delta,} \hlkwd{aes}\hlstd{(}\hlkwc{x} \hlstd{= band))} \hlopt{+}
+  \hlkwd{geom_line}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{y} \hlstd{= forest),} \hlkwc{color} \hlstd{=} \hlstr{'green'}\hlstd{,} \hlkwc{linetype} \hlstd{=} \hlstr{'dashed'}\hlstd{)} \hlopt{+}
+  \hlkwd{geom_line}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{y} \hlstd{= river),} \hlkwc{color} \hlstd{=} \hlstr{'blue'}\hlstd{,} \hlkwc{linetype} \hlstd{=} \hlstr{'dashed'}\hlstd{)} \hlopt{+}
+  \hlkwd{geom_line}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{y} \hlstd{= forest2),} \hlkwc{color} \hlstd{=} \hlstr{'green'}\hlstd{,} \hlkwc{linetype} \hlstd{=} \hlstr{'solid'}\hlstd{)} \hlopt{+}
+  \hlkwd{geom_line}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{y} \hlstd{= river2),} \hlkwc{color} \hlstd{=} \hlstr{'blue'}\hlstd{,} \hlkwc{linetype} \hlstd{=} \hlstr{'solid'}\hlstd{)} \hlopt{+}
+  \hlkwd{labs}\hlstd{(}\hlkwc{x} \hlstd{=} \hlstr{'band'}\hlstd{,} \hlkwc{y} \hlstd{=} \hlstr{'reflectance'}\hlstd{)} \hlopt{+}
+  \hlkwd{theme}\hlstd{(}\hlkwc{legend.position} \hlstd{=} \hlstr{'left'}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-39} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# FOREST reflectance did not vary, while RIVER is clearly "bluer" in 2006}
+\hlcom{# due to fewer suspended particles.}
+
+\hlcom{# Earth Observatory publishes a "mistery image" montly. Let's do science.}
+
+\hlstd{boh} \hlkwb{<-} \hlkwd{brick}\hlstd{(}\hlstr{'augustpuzzler-1.jpg'}\hlstd{)}
+\hlkwd{plotRGB}\hlstd{(boh,} \hlnum{1}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{3}\hlstd{,} \hlkwc{stretch} \hlstd{=} \hlstr{'hist'}\hlstd{)}
+\hlkwd{click}\hlstd{(boh,} \hlkwc{id} \hlstd{= T,} \hlkwc{xy} \hlstd{= T,} \hlkwc{cell} \hlstd{= T,} \hlkwc{type} \hlstd{=} \hlstr{'p'}\hlstd{,} \hlkwc{pch} \hlstd{=} \hlnum{16}\hlstd{,} \hlkwc{cex} \hlstd{=} \hlnum{4}\hlstd{,} \hlkwc{col} \hlstd{=} \hlstr{'yellow'}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-40} 
+
+}
+
+
+\begin{kframe}\begin{verbatim}
+## NULL
+\end{verbatim}
+\begin{alltt}
+\hlcom{# output}
+\hlcom{# x     y   cell augustpuzzler.1.1 augustpuzzler.1.2 augustpuzzler.1.3}
+\hlcom{# 1 630.5 417.5  45271               197               188               159}
+\hlcom{# 2 249.5 292.5 134890               170               166               154}
+\hlcom{# 3 697.5  74.5 292298                21                76                55}
+
+
+\hlcom{# define the columns of the dataset:}
+\hlstd{band} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{3}\hlstd{)}
+\hlstd{stratum1} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{197}\hlstd{,} \hlnum{188}\hlstd{,} \hlnum{159}\hlstd{)}
+\hlstd{stratum2} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{170}\hlstd{,} \hlnum{166}\hlstd{,} \hlnum{154}\hlstd{)}
+\hlstd{stratum3} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{21}\hlstd{,} \hlnum{76}\hlstd{,} \hlnum{55}\hlstd{)}
+
+\hlstd{spectralsg} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(band, stratum1, stratum2, stratum3)}
+
+\hlcom{# plot the sepctral signatures}
+\hlkwd{ggplot}\hlstd{(spectralsg,} \hlkwd{aes}\hlstd{(}\hlkwc{x} \hlstd{= band))} \hlopt{+}
+  \hlkwd{geom_line}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{y} \hlstd{= stratum1),} \hlkwc{color} \hlstd{=} \hlstr{'yellow'}\hlstd{)} \hlopt{+}
+  \hlkwd{geom_line}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{y} \hlstd{= stratum2),} \hlkwc{color} \hlstd{=} \hlstr{'green'}\hlstd{)} \hlopt{+}
+  \hlkwd{geom_line}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{y} \hlstd{= stratum3),} \hlkwc{color} \hlstd{=} \hlstr{'blue'}\hlstd{)} \hlopt{+}
+  \hlkwd{labs}\hlstd{(}\hlkwc{x} \hlstd{=} \hlstr{'band'}\hlstd{,} \hlkwc{y} \hlstd{=} \hlstr{'reflectance'}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.6\linewidth]{figure/R-tot-Rnwunnamed-chunk-1-41} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlcom{# It clearly is something!}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+The R session information (including the OS info, R version and all
+packages used):
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{sessionInfo}\hlstd{()}
+\end{alltt}
+\begin{verbatim}
+## R version 3.6.3 (2020-02-29)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 7 x64 (build 7601) Service Pack 1
+## 
+## Matrix products: default
+## 
+## locale:
+## [1] LC_COLLATE=Italian_Italy.1252  LC_CTYPE=Italian_Italy.1252   
+## [3] LC_MONETARY=Italian_Italy.1252 LC_NUMERIC=C                  
+## [5] LC_TIME=Italian_Italy.1252    
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] rgdal_1.4-7         viridis_0.6.1       viridisLite_0.4.0   gridExtra_2.3      
+##  [5] ggplot2_3.2.1       RStoolbox_0.2.6     ncdf4_1.17          rasterdiv_0.2-3    
+##  [9] rasterVis_0.50.3    latticeExtra_0.6-29 lattice_0.20-41     terra_1.0-10       
+## [13] raster_3.4-5        sp_1.4-5            knitr_1.31         
+## 
+## loaded via a namespace (and not attached):
+##  [1] splines_3.6.3        foreach_1.5.1        prodlim_2019.11.13   assertthat_0.2.1    
+##  [5] highr_0.8            stats4_3.6.3         progress_1.2.2       ipred_0.9-11        
+##  [9] pillar_1.4.2         glue_1.3.1           digest_0.6.23        pROC_1.17.0.1       
+## [13] RColorBrewer_1.1-2   colorspace_1.4-1     recipes_0.1.15       Matrix_1.2-18       
+## [17] plyr_1.8.4           timeDate_3043.102    XML_3.99-0.3         pkgconfig_2.0.3     
+## [21] caret_6.0-86         purrr_0.3.3          scales_1.1.0         jpeg_0.1-8.1        
+## [25] gower_0.2.2          lava_1.6.9           tibble_2.1.3         farver_2.0.1        
+## [29] generics_0.1.0       withr_2.1.2          nnet_7.3-12          hexbin_1.28.1       
+## [33] lazyeval_0.2.2       survival_3.1-8       magrittr_1.5         crayon_1.3.4        
+## [37] evaluate_0.14        doParallel_1.0.16    nlme_3.1-144         MASS_7.3-51.5       
+## [41] class_7.3-18         tools_3.6.3          data.table_1.12.6    prettyunits_1.0.2   
+## [45] hms_0.5.2            geosphere_1.5-10     lifecycle_0.1.0      stringr_1.4.0       
+## [49] munsell_0.5.0        compiler_3.6.3       svMisc_1.1.4         tinytex_0.22        
+## [53] rlang_0.4.10         grid_3.6.3           iterators_1.0.13     labeling_0.3        
+## [57] gtable_0.3.0         ModelMetrics_1.2.2.2 codetools_0.2-16     reshape2_1.4.3      
+## [61] R6_2.4.1             zoo_1.8-6            lubridate_1.7.10     dplyr_0.8.3         
+## [65] rgeos_0.5-2          stringi_1.4.3        parallel_3.6.3       Rcpp_1.0.3          
+## [69] vctrs_0.3.6          rpart_4.1-15         png_0.1-7            tidyselect_1.1.0    
+## [73] xfun_0.22
+\end{verbatim}
+\begin{alltt}
+\hlkwd{Sys.time}\hlstd{()}
+\end{alltt}
+\begin{verbatim}
+## [1] "2021-08-04 16:08:02 CEST"
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+\end{document}
