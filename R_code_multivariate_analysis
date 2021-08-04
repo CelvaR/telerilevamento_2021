@@ -1,7 +1,0 @@
-library(raster)
-library(RStoolbox)
-setwd("C:/Users/Rob/Desktop/UNIBO_05.04.21/Telerilevamento e GIS/lab")
-p224r63_2011 <- brick("p224r63_2011_masked.grd")
-plot(p224r63_2011$B3_sre, p224r63_2011$B2_sre) # plots pixel values on a carthesian system
-# note: MULTICOLLINEARIY: high degree of correlation between explanarory variables
-# it is possible to plot the correlation between all bands using pairs(p224r63_2011) (demanding on PCU!)
